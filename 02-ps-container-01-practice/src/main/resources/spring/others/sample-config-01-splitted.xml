@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+  <!-- TODO 5. Split this file in multiple configuration files. -->
+
+  <import resource="classpath*:spring/others/split-config/collection-config-01.xml"/>
+
+  <import resource="split-config/*bean-config-01.xml"/>
+
+  <import resource="split-config/sample-factory-config-01.xml"/>
+
+</beans>
