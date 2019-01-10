@@ -26,27 +26,34 @@ public class SimpleOperationsService implements OperationsService {
     public Response createResponse(Long sitterId, Long requestId) {
         // get sitter
         // TODO 1. retrieve sitter * request  (according to diagram 2.5)
-
+        User user = userRepo.findById(sitterId);
+        Request request = requestRepo.findById(requestId);
         //create a response
         Response response = new Response();
         //TODO 2. populate & save the response object
+        response.setResponseStatus(ResponseStatus.PROPOSED);
+        response.setUser(user);
+        response.setDetails("Details test");
+        request.addResponse(response);
+        responseRepo.save(response);
         return response;
     }
-
 
     @Override
     public void acceptResponse(Long requestId, Long responseId) {
         Request request = requestRepo.findById(requestId);
         Response response = responseRepo.findById(responseId);
 
-        request.getResponses().forEach(r -> {
-            if (r.equals(response)) {
-                r.setResponseStatus(ResponseStatus.ACCEPTED);
-            } else {
-                r.setResponseStatus(ResponseStatus.REJECTED);
-            }
-            responseRepo.save(r);
-        });
+        request
+          .getResponses()
+          .forEach(r -> {
+              if (r.equals(response)) {
+                  r.setResponseStatus(ResponseStatus.ACCEPTED);
+              } else {
+                  r.setResponseStatus(ResponseStatus.REJECTED);
+              }
+              responseRepo.save(r);
+          });
     }
 
     @Override
@@ -56,13 +63,14 @@ public class SimpleOperationsService implements OperationsService {
         request.setRequestStatus(RequestStatus.SOLVED);
         requestRepo.save(request);
 
-
         for (Response r : request.getResponses()) {
             if (r.getResponseStatus() == ResponseStatus.ACCEPTED) {
                 review.setResponse(r);
                 User sitter = r.getUser();
                 // compute new rating for user
-                double newRating = (sitter.getRating() + review.getGrade().getGrade()) / 2;
+                double newRating = (sitter.getRating() + review
+                  .getGrade()
+                  .getGrade()) / 2;
                 sitter.setRating(newRating);
                 userRepo.save(sitter);
                 return sitter;
@@ -78,7 +86,9 @@ public class SimpleOperationsService implements OperationsService {
         User owner = request.getUser();
         review.setRequest(request);
         // compute new rating for user
-        double newRating = (owner.getRating() + review.getGrade().getGrade()) / 2;
+        double newRating = (owner.getRating() + review
+          .getGrade()
+          .getGrade()) / 2;
         owner.setRating(newRating);
         userRepo.save(owner);
         return owner;
