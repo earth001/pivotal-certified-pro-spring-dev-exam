@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.inject.Inject;
 import javax.sql.DataSource;
 
 /**
@@ -16,7 +17,8 @@ import javax.sql.DataSource;
 public class PetRepoConfig {
 
 
-    @Autowired
+    //@Autowired
+    @Inject
     DataSource dataSource;
 
     @Bean
