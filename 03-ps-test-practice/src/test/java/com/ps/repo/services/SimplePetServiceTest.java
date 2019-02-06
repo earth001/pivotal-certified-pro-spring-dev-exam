@@ -1,6 +1,8 @@
 package com.ps.repo.services;
 
 import static com.ps.util.TestObjectsBuilder.buildUser;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -67,7 +69,9 @@ public class SimplePetServiceTest {
   //positive test, we know that pets for this owner exist and how many
   @Test
   public void findByOwnerPositive() {
-    //TODO 15. Analyse the stub implementation and add a test for simplePetService.findAllByOwner(owner)
+    final User owner = buildUser("test@gmail.com", "a!2#tre", UserType.OWNER);
+    Set<Pet> pets = simplePetService.findAllByOwner(owner);
+    assertThat(pets, hasSize(2));
   }
 
   //negative test, we know that pets for this owner do not exist
