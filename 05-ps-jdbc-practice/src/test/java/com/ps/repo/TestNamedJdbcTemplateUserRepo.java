@@ -9,13 +9,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -24,9 +21,8 @@ import static org.junit.Assert.assertNotNull;
  * Created by iuliana.cosmina on 6/4/16.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestDataConfig.class, AppConfig.class})
+@ContextConfiguration(classes = { TestDataConfig.class, AppConfig.class })
 @ActiveProfiles("dev")
-// TODO 30. [BONUS] Write test methods to cover all methods in JdbcNamedTemplateUserRepo
 public class TestNamedJdbcTemplateUserRepo {
 
     @Autowired
@@ -41,13 +37,27 @@ public class TestNamedJdbcTemplateUserRepo {
     @Test
     public void testFindById() {
         User user = userRepo.findById(1L);
+
         assertEquals("John", user.getUsername());
     }
 
-    @Test
+    @Test(expected = EmptyResultDataAccessException.class)
     public void testNoFindById() {
-        User user = userRepo.findById(99L);
-        assertEquals("John", user.getUsername());
+        userRepo.findById(99L);
     }
-    
+
+    @Test
+    public void testCreateUser() {
+        int rows = userRepo.createUser(15L, "DemoUser", "DemoPassword", "demo@email.com");
+
+        assertEquals(1, rows);
+    }
+
+    @Test
+    public void testDeleteById() {
+        int rows = userRepo.deleteById(2L);
+
+        assertEquals(1, rows);
+    }
+
 }
