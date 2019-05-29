@@ -1,17 +1,20 @@
 package com.ps.config;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
 import java.sql.Driver;
@@ -24,14 +27,10 @@ import java.sql.Driver;
 @PropertySource("classpath:db/db.properties")
 public class TestDataConfig {
 
-    @Value("${db.driverClassName}")
-    private String driverClassName;
-    @Value("${db.url}")
-    private String url;
-    @Value("${db.username}")
-    private String username;
-    @Value("${db.password}")
-    private String password;
+    @Value("${db.driverClassName}") private String driverClassName;
+    @Value("${db.url}") private String url;
+    @Value("${db.username}") private String username;
+    @Value("${db.password}") private String password;
 
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
@@ -54,12 +53,9 @@ public class TestDataConfig {
         }
     }
 
+    @Value("classpath:db/schema.sql") private Resource schemaScript;
 
-    @Value("classpath:db/schema.sql")
-    private Resource schemaScript;
-
-    @Value("classpath:db/test-data.sql")
-    private Resource dataScript;
+    @Value("classpath:db/test-data.sql") private Resource dataScript;
 
     @Bean
     public DataSourceInitializer dataSourceInitializer(final DataSource dataSource) {
@@ -81,5 +77,9 @@ public class TestDataConfig {
         return new JdbcTemplate(dataSource());
     }
 
-   //TODO 31. Define a transaction manager bean of the appropriate type
+    //Define a transaction manager bean of the appropriate type
+    @Bean
+    public PlatformTransactionManager txManager() {
+        return new DataSourceTransactionManager(dataSource());
+    }
 }
